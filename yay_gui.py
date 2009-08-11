@@ -33,7 +33,6 @@ class RunThread(threading.Thread):
 		self.last_off()
 		self.updateLabel()
 
-
 	def set_dir(self,dir):
 		self.dir = dir
 		self.loadup()
@@ -233,10 +232,6 @@ class YayGui:
 	def goodbye(self,event):
 		sys.exit()
 
-
-
 if __name__ == '__main__':
-	#r = RunThread()
-	#r.start()
 	y = YayGui()
 
