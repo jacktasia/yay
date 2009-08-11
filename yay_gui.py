@@ -1,4 +1,7 @@
 #!/home/v/jython2.5.0/bin/jython
+# jack angers
+# jacktasia@gmail.com
+# boo
 
 import java.awt as awt
 import javax.swing as swing
