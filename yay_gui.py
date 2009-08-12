@@ -53,16 +53,17 @@ class RunThread(threading.Thread):
 	def get_has_dir(self):
 		return self.has_dir
 
-	def set_dir(self,dir):
+	def set_dir(self):
 		config = {}
-		dir = self.getDirectory()
-		config['browse_folder'] =  dir + self.os_sep
+		dir = str(self.getDirectory()).strip() + self.os_sep
+		config['browse_folder'] =  dir 
 		output = open(self.config_path,'wb')
 		pickle.dump(config,output)
 		output.close()
 		self.has_dir = True
-		self.dir = dir
+		self.dir = dir 
 		self.loadup()
+		#self.do_change()
 
 	def get_dir(self):
 		f = open(self.config_path,'rb')
@@ -145,6 +146,7 @@ class RunThread(threading.Thread):
 		self.updateLabel()
 		self.countsec = 0
 		b = self.cdd_cmd % (self.dir + self.workingdir[self.file_count])
+		print b
 		os.system(b)
 
 	def next(self):
