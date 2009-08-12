@@ -45,6 +45,7 @@ class RunThread(threading.Thread):
 		self.countsec = 0
 		self.is_paused = False
 		self.first_start = True
+		#should just call loadup or similar DRY..shoudl be listing image files
 		self.workingdir = dircache.listdir(self.dir)
 		self.workingdir_size = len(self.workingdir)
 		self.last_off()
@@ -53,6 +54,7 @@ class RunThread(threading.Thread):
 	def get_has_dir(self):
 		return self.has_dir
 
+	## need like a set_config...so we can have like config['pause_time']
 	def set_dir(self):
 		config = {}
 		dir = str(self.getDirectory()).strip() + self.os_sep
@@ -160,14 +162,8 @@ class RunThread(threading.Thread):
 	def updateLabel(self):
 		m = str(self.file_count+1) + "/" + str(self.workingdir_size)
 		self.lblStatus.setText(m)
-
-class YayGuiSettings:
-
-	def createSettingsFrame(self):
-		# self.settingsFrame = swing.JFrame('Yay Settings')
-		print "building settings gui"
-		
-class YayGui(RunThread,YayGuiSettings):
+	
+class YayGui(RunThread):
 	def __init__(self):
 		self.frame = swing.JFrame('Yay')
 		self.frame.windowClosing = self.goodbye
@@ -176,9 +172,14 @@ class YayGui(RunThread,YayGuiSettings):
 		panel = swing.JPanel()
 		###
 		menuBar = swing.JMenuBar()
-		editMenu = swing.JMenu("Edit");
-		menuItemSettings = swing.JMenuItem("Settings",actionPerformed=self.showSettings); # will actually start it
-		editMenu.add(menuItemSettings);
+		editMenu = swing.JMenu("File");
+		menuItemSettings = swing.JMenuItem("Settings",actionPerformed=self.showSettings) # will actually start it
+		menuItemReload = swing.JMenuItem("Reload Folder",actionPerformed=self.callReload)
+		menuItemChangeFolder = swing.JMenuItem("Change Folder",actionPerformed=self.callSetDir)
+
+		editMenu.add(menuItemReload)	
+		editMenu.add(menuItemChangeFolder);	
+		editMenu.add(menuItemSettings)
 		menuBar.add(editMenu)
 		self.frame.setJMenuBar(menuBar);
 		###
@@ -195,22 +196,27 @@ class YayGui(RunThread,YayGuiSettings):
 		self.start_config()
 		self.frame.setContentPane(panel)
 
-		self.frame.size = (339,83)
+		self.frame.size = (339,90)
 		self.frame.resizable = False
 		self.frame.show()
 	
-	def showSettings(self,event):
+	def showSettings(self,event): # bad name..should be setPauseLength or something
 		print "settings"
+		swing.JOptionPane.showInputDialog(
+                    None,
+                   "How many seconds before changing background?",
+                    swing.JOptionPane.PLAIN_MESSAGE,
+                    None,
+                    None,
+                    "4")
 
-	def setDir(self):
+	
+	def callSetDir(self,event):
 		self.set_dir()
 
-	def getDir(self):
-		f = open(self.config_path,'rb')
-		config = pickle.load(f)
-		f.close()
-		return config
-	
+	def callReload(self,event):
+		self.reloadTime()
+
 	def callGoEnter(self,event):
 		if event.keyCode == 10:
 			self.callGo()
@@ -227,7 +233,7 @@ class YayGui(RunThread,YayGuiSettings):
 			ticks = int(reqt.split('sec')[0])
 			self.set_ticks(ticks)
 		elif reqt.find('setdir') != -1:
-			self.setDir()
+			self.set_dir()
 		else:
 			self.goto_img(int(reqt))
 
