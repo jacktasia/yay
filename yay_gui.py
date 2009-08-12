@@ -167,7 +167,6 @@ class YayGuiSettings:
 		# self.settingsFrame = swing.JFrame('Yay Settings')
 		print "building settings gui"
 		
-
 class YayGui(RunThread,YayGuiSettings):
 	def __init__(self):
 		self.frame = swing.JFrame('Yay')
