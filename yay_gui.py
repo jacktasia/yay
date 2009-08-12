@@ -149,6 +149,14 @@ class YayGui:
 		self.frame.contentPane.layout = awt.GridLayout(4,2)
 		self.is_paused = True
 		panel = swing.JPanel()
+		###
+		menuBar = swing.JMenuBar()
+		editMenu = swing.JMenu("Edit");
+		menuItemSettings = swing.JMenuItem("Settings",actionPerformed=self.showSettings); # will actually start it
+		editMenu.add(menuItemSettings);
+		menuBar.add(editMenu)
+		self.frame.setJMenuBar(menuBar);
+		###
 		self.btnPrev = swing.JButton('<<',actionPerformed=self.callLast)
 		panel.add(self.btnPrev)
 		self.btnStart = swing.JButton("Start", actionPerformed=self.callStart)
@@ -165,6 +173,9 @@ class YayGui:
 		self.frame.size = (339,83)
 		self.frame.show()
 	
+	def showSettings(self,event):
+		print "settings"
+
 	def setDir(self):
 		config = {}
 		bf = str(self.getDirectory())
