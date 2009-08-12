@@ -16,26 +16,59 @@ import sys
 import pickle
 
 class RunThread(threading.Thread):
-	def __init__(self,lblStatus,dir):
+	def start_config(self):
+		os_name =  System.getProperty('os.name')
+		self.os_sep = File.separator	
+		self.has_dir = True
+		
+		app_name = 'Yay'
+		filename = 'config.pkl'
+		if os_name == 'Windows':
+		    self.config_dir = os.environ["APPDATA"] + self.os_sep + app_name + self.os_sep
+		else:
+		    self.config_dir = os.path.expanduser("~") + self.os_sep + '.' + app_name + self.os_sep
+		self.config_path = self.config_dir + filename #'server_config.ini'
+		if not os.path.exists(self.config_dir):
+			os.makedirs(self.config_dir)
+			self.has_dir = False
+			self.set_dir()
+		self.config = self.get_dir()
+		self.dir = self.config['browse_folder']
+
 		self.ticks = 5
 		self._stopevent = threading.Event()
 		self._sleepperiod = 1.0
-		self.lblStatus = lblStatus
 		self.cdd_cmd = "gconftool-2 --set /desktop/gnome/background/picture_filename --type=string \"%s\""
-		self.dir = dir  #'/media/disk/pictures/'
-		self.workingdir = dircache.listdir(self.dir)
-		self.workingdir_size = len(self.workingdir)
+		
 		threading.Thread.__init__(self,name='GoGo')
 		self.file_count = 0;
 		self.countsec = 0
 		self.is_paused = False
 		self.first_start = True
+		self.workingdir = dircache.listdir(self.dir)
+		self.workingdir_size = len(self.workingdir)
 		self.last_off()
 		self.updateLabel()
 
+	def get_has_dir(self):
+		return self.has_dir
+
 	def set_dir(self,dir):
+		config = {}
+		dir = self.getDirectory()
+		config['browse_folder'] =  dir + self.os_sep
+		output = open(self.config_path,'wb')
+		pickle.dump(config,output)
+		output.close()
+		self.has_dir = True
 		self.dir = dir
 		self.loadup()
+
+	def get_dir(self):
+		f = open(self.config_path,'rb')
+		config = pickle.load(f)
+		f.close()
+		return config
 
 	def set_ticks(self,ticks):
 		self.ticks = ticks
@@ -125,25 +158,16 @@ class RunThread(threading.Thread):
 	def updateLabel(self):
 		m = str(self.file_count+1) + "/" + str(self.workingdir_size)
 		self.lblStatus.setText(m)
+
+class YayGuiSettings:
+
+	def createSettingsFrame(self):
+		# self.settingsFrame = swing.JFrame('Yay Settings')
+		print "building settings gui"
 		
-class YayGui:
+
+class YayGui(RunThread,YayGuiSettings):
 	def __init__(self):
-		### CONFIG
-		os_name =  System.getProperty('os.name')
-		os_sep = File.separator
-		self.os_sep = os_sep		
-		app_name = 'Yay'
-		filename = 'config.pkl'
-		if os_name == 'Windows':
-		    self.config_dir = os.environ["APPDATA"] + os_sep + app_name + os_sep
-		else:
-		    self.config_dir = os.path.expanduser("~") + os_sep + '.' + app_name + os_sep
-		self.config_path = self.config_dir + filename #'server_config.ini'
-		if not os.path.exists(self.config_dir):
-			os.makedirs(self.config_dir)
-			self.setDir()
-		self.config = self.getDir()
-		### GUI
 		self.frame = swing.JFrame('Yay')
 		self.frame.windowClosing = self.goodbye
 		self.frame.contentPane.layout = awt.GridLayout(4,2)
@@ -163,28 +187,22 @@ class YayGui:
 		panel.add(self.btnStart)
 		self.btnNext = swing.JButton('>>',actionPerformed=self.callNext)
 		panel.add(self.btnNext)
-		self.lblStatus = swing.JTextField("????????",keyPressed=self.callGoEnter)
+		self.lblStatus = swing.JTextField("????????",7,keyPressed=self.callGoEnter)
 		panel.add(self.lblStatus)
 		self.btnGo = swing.JButton('Go',actionPerformed=self.callGoClick)
 		panel.add(self.btnGo)
-		self.t = RunThread(self.lblStatus,self.config['browse_folder'])
+		self.start_config()
 		self.frame.setContentPane(panel)
 
 		self.frame.size = (339,83)
+		self.frame.resizable = False
 		self.frame.show()
 	
 	def showSettings(self,event):
 		print "settings"
 
 	def setDir(self):
-		config = {}
-		bf = str(self.getDirectory())
-		config['browse_folder'] =  bf.strip() + self.os_sep
-		output = open(self.config_path,'wb')
-		pickle.dump(config,output)
-		output.close()
-		return config['browse_folder']
-		
+		self.set_dir()
 
 	def getDir(self):
 		f = open(self.config_path,'rb')
@@ -203,22 +221,20 @@ class YayGui:
 		reqt = self.lblStatus.getText()
 
 		if reqt == 'reload':
-			self.t.reloadTime()		
+			self.reloadTime()		
 		elif reqt.find('sec') != -1:
 			ticks = int(reqt.split('sec')[0])
-			self.t.set_ticks(ticks)
+			self.set_ticks(ticks)
 		elif reqt.find('setdir') != -1:
-			dir = self.setDir()
-			self.t.set_dir(dir)
-			self.frame.pack
+			self.setDir()
 		else:
-			self.t.goto_img(int(reqt))
+			self.goto_img(int(reqt))
 
 	def callLast(self,event):
-		self.t.last()
+		self.last()
 
 	def callNext(self,event):
-		self.t.next()
+		self.next()
 
 	def getDirectory(self):
 		fc = swing.JFileChooser()
@@ -231,12 +247,12 @@ class YayGui:
 
 	def callStart(self,event):
 		if self.is_paused:
-			self.t.doStart()
+			self.doStart()
 			self.is_paused = False
 			self.btnStart.setText("Pause")
 
 		else:
-			self.t.pause()
+			self.pause()
 			self.is_paused = True
 			self.btnStart.setText("Start")
 	
