@@ -1,0 +1,10 @@
+TODO
+
+
+-- make sure it only counts up the images files
+-- after above: tell user when folder has 0 pictures in it and make them select again...
+-- set slideshow pause duration via gui with jmenu bar
+
+-- force user to select a image directory
+
+-- handle situation where ~/.Yay folder exists but config.pkl does not...just create file...

@@ -28,12 +28,21 @@ class RunThread(threading.Thread):
 		else:
 		    self.config_dir = os.path.expanduser("~") + self.os_sep + '.' + app_name + self.os_sep
 		self.config_path = self.config_dir + filename #'server_config.ini'
+		self.dir = ''
 		if not os.path.exists(self.config_dir):
 			os.makedirs(self.config_dir)
 			self.has_dir = False
 			self.set_dir()
 		self.config = self.get_dir()
 		self.dir = self.config['browse_folder']
+		
+		if self.dir == '':
+			## this should be a dialog alert...
+			print "quitting"
+			sys.exit()
+		else:
+			print self.dir
+
 
 		self.ticks = 5
 		self._stopevent = threading.Event()
@@ -57,7 +66,7 @@ class RunThread(threading.Thread):
 	## need like a set_config...so we can have like config['pause_time']
 	def set_dir(self):
 		config = {}
-		dir = str(self.getDirectory()).strip() + self.os_sep
+		dir = self.getDirectory()
 		config['browse_folder'] =  dir 
 		output = open(self.config_path,'wb')
 		pickle.dump(config,output)
@@ -248,9 +257,9 @@ class YayGui(RunThread):
 		fc.setFileSelectionMode(swing.JFileChooser.DIRECTORIES_ONLY)
 		rv = fc.showDialog(None,"Pick")
 		if rv == swing.JFileChooser.APPROVE_OPTION:
-			return fc.getSelectedFile()
+			return  str(fc.getSelectedFile()).strip() + self.os_sep
 		else:
-			return self.getDirectory()
+			return self.dir
 
 	def callStart(self,event):
 		if self.is_paused:
