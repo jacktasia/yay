@@ -15,11 +15,21 @@ import os
 import sys
 import pickle
 
+# used in reloadTime filter so only image files are "seen"/counted
+def img_only(f):
+	exts = ['png','jpg','gif','jpeg','bmp']
+	e = f.split('.')
+	ext = e[len(e)-1].lower()
+	if ext in exts:
+		return True
+
 class RunThread(threading.Thread):
 	def start_config(self):
 		os_name =  System.getProperty('os.name')
 		self.os_sep = File.separator	
 		self.has_dir = True
+		self.ticks = 30 #default
+		self.first_start = False
 		
 		app_name = 'Yay'
 		filename = 'config.pkl'
@@ -30,11 +40,20 @@ class RunThread(threading.Thread):
 		self.config_path = self.config_dir + filename #'server_config.ini'
 		self.dir = ''
 		if not os.path.exists(self.config_dir):
+			self.first_start = True
 			os.makedirs(self.config_dir)
 			self.has_dir = False
-			self.set_dir()
-		self.config = self.get_dir()
-		self.dir = self.config['browse_folder']
+			self.create_config_file()
+		else:
+			try:
+				f = open(self.config_path,'rb')
+			except IOError:
+				print "file doesn't exist"
+				self.first_start = True
+				self.create_config_file()
+	
+		self.dir = self.get_config('browse_folder')
+		self.ticks = self.get_config('speed')
 		
 		if self.dir == '':
 			## this should be a dialog alert...
@@ -44,7 +63,6 @@ class RunThread(threading.Thread):
 			print self.dir
 
 
-		self.ticks = 5
 		self._stopevent = threading.Event()
 		self._sleepperiod = 1.0
 		self.cdd_cmd = "gconftool-2 --set /desktop/gnome/background/picture_filename --type=string \"%s\""
@@ -52,35 +70,53 @@ class RunThread(threading.Thread):
 		threading.Thread.__init__(self,name='GoGo')
 		self.file_count = 0;
 		self.countsec = 0
-		self.is_paused = False
-		self.first_start = True
-		#should just call loadup or similar DRY..shoudl be listing image files
-		self.workingdir = dircache.listdir(self.dir)
-		self.workingdir_size = len(self.workingdir)
+		self.is_paused = True
+		self.loadup()		
 		self.last_off()
 		self.updateLabel()
+
+	def create_config_file(self):
+		self.set_dir()
+		self.set_speed(self.ticks)
 
 	def get_has_dir(self):
 		return self.has_dir
 
 	## need like a set_config...so we can have like config['pause_time']
 	def set_dir(self):
-		config = {}
 		dir = self.getDirectory()
-		config['browse_folder'] =  dir 
-		output = open(self.config_path,'wb')
-		pickle.dump(config,output)
-		output.close()
+		self.set_config('browse_folder',dir)
 		self.has_dir = True
 		self.dir = dir 
 		self.loadup()
 		#self.do_change()
 
-	def get_dir(self):
+	def set_speed(self,s):
+		self.set_config('speed',s)
+		self.ticks = s
+
+	def set_config(self,n,v):
+		if not self.first_start:
+			config = self.get_config()			
+		else:
+			config = {}
+			self.first_start = False
+		config[n] = v
+		output = open(self.config_path,'wb')
+		pickle.dump(config,output)
+		output.close()
+
+	def get_config(self,n=None):
 		f = open(self.config_path,'rb')
 		config = pickle.load(f)
 		f.close()
-		return config
+		if n is not None:
+			return config[n]
+		else:
+			return config
+	
+	def get_dir(self):
+		return self.get_config('browse_folder')
 
 	def set_ticks(self,ticks):
 		self.ticks = ticks
@@ -113,12 +149,9 @@ class RunThread(threading.Thread):
 		self.do_change()
 
 	def doStart(self):
-		if self.first_start:
-			self.start()
-			self.do_change()
-			self.first_start = False
-		else:
-			self.is_paused = False
+		self.start()
+		self.do_change()
+		
 		
 	def pause(self):
 		if not self.is_paused:
@@ -142,12 +175,15 @@ class RunThread(threading.Thread):
 		self.reloadTime()
 
 	def reloadTime(self):
-		self.workingdir = dircache.listdir(self.dir)
+		self.workingdir = filter(img_only,dircache.listdir(self.dir))
 		self.workingdir_size = len(self.workingdir)
+		if self.workingdir_size == 0:
+			self.showDialogError("Selected image directory has no images! Please pick again.");
+			self.set_dir()
 		self.updateLabel()
 
 	def last(self):
-		if self.file_count-1 > 0:
+		if self.file_count-1 >= 0:
 			self.file_count -= 1
 		else:
 			self.file_count = self.workingdir_size -1
@@ -177,18 +213,23 @@ class YayGui(RunThread):
 		self.frame = swing.JFrame('Yay')
 		self.frame.windowClosing = self.goodbye
 		self.frame.contentPane.layout = awt.GridLayout(4,2)
-		self.is_paused = True
 		panel = swing.JPanel()
 		###
 		menuBar = swing.JMenuBar()
-		editMenu = swing.JMenu("File");
-		menuItemSettings = swing.JMenuItem("Settings",actionPerformed=self.showSettings) # will actually start it
-		menuItemReload = swing.JMenuItem("Reload Folder",actionPerformed=self.callReload)
-		menuItemChangeFolder = swing.JMenuItem("Change Folder",actionPerformed=self.callSetDir)
+		editMenu = swing.JMenu("File")
+		#menuItemSettings = swing.JMenuItem("Settings",actionPerformed=self.showSettings) # will actually start it
+		menuItemReload = swing.JMenuItem("Reload Image Folder",actionPerformed=self.callReload)
+		menuItemChangeFolder = swing.JMenuItem("Change Image Folder",actionPerformed=self.callSetDir)
+		menuItemSetSpeed = swing.JMenuItem("Set Slideshow Speed",actionPerformed=self.showSpeedDialog)
+		#showDurLengthDialog
+		#dividers up in here? or split across multiple menus on the bar?
+		menuItemQuit = swing.JMenuItem("Quit",actionPerformed=self.goodbye)
 
 		editMenu.add(menuItemReload)	
-		editMenu.add(menuItemChangeFolder);	
-		editMenu.add(menuItemSettings)
+		editMenu.add(menuItemChangeFolder)
+		#editMenu.add(menuItemSettings)
+		editMenu.add(menuItemSetSpeed)
+		editMenu.add(menuItemQuit)
 		menuBar.add(editMenu)
 		self.frame.setJMenuBar(menuBar);
 		###
@@ -209,15 +250,31 @@ class YayGui(RunThread):
 		self.frame.resizable = False
 		self.frame.show()
 	
-	def showSettings(self,event): # bad name..should be setPauseLength or something
-		print "settings"
-		swing.JOptionPane.showInputDialog(
+	def showSpeedDialog(self,event): # bad name..should be setPauseLength or something
+		self.setSpeed()
+
+	def setSpeed(self):
+		a = swing.JOptionPane.showInputDialog(
                     None,
                    "How many seconds before changing background?",
+		   "Set Slideshow Speed",
                     swing.JOptionPane.PLAIN_MESSAGE,
                     None,
                     None,
-                    "4")
+                    str(self.ticks))
+		
+		if a is not None:
+			if a.isdigit():
+				self.set_speed(int(a))
+			else:
+				self.showDialogError("Not a number!")
+				self.setSpeed()
+
+		
+	def showDialogError(self,msg):
+		swing.JOptionPane.showMessageDialog(None,msg,
+			"Error: What the french, toast?",
+			swing.JOptionPane.ERROR_MESSAGE)
 
 	
 	def callSetDir(self,event):

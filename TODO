@@ -1,10 +1,9 @@
 TODO
 
+-- prune feature - vote up and down...
 
--- make sure it only counts up the images files
--- after above: tell user when folder has 0 pictures in it and make them select again...
--- set slideshow pause duration via gui with jmenu bar
+-- have label with current dir & speed
 
--- force user to select a image directory
+-- have option to start slideshow on start up
 
--- handle situation where ~/.Yay folder exists but config.pkl does not...just create file...
+-- feature to view all images on maxed screen ...maybe 4 to a screen with their and voting....BIG VIEW
