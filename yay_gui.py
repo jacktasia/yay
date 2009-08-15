@@ -94,6 +94,7 @@ class RunThread(threading.Thread):
 	def set_speed(self,s):
 		self.set_config('speed',s)
 		self.ticks = s
+		self.updateLabel()
 
 	def set_config(self,n,v):
 		if not self.first_start:
@@ -130,11 +131,9 @@ class RunThread(threading.Thread):
 	def last_off(self):
 		#this finds out the current desktop and if is the current selected folder...
 		cur_path = os.popen("gconftool-2 --get /desktop/gnome/background/picture_filename").read().strip()
-		count=0;
+		count = 0;
 		found = -1
-
 		b = cur_path.split('/')
-
 		cur_path = b[len(b)-1]
 		for a in self.workingdir:
 			print "%s == %s" % (a,cur_path)
@@ -144,7 +143,6 @@ class RunThread(threading.Thread):
 			count += 1
 		if found == -1:
 			found = 0
-		
 		self.file_count = found
 		self.do_change()
 
@@ -163,6 +161,7 @@ class RunThread(threading.Thread):
 	def run(self):
 		while not self._stopevent.isSet():
 			self.countsec +=1
+			self.updateTicker()
 			if self.countsec > self.ticks and not self.is_paused:
 				self.next()
 				self.countsec = 0
@@ -177,8 +176,9 @@ class RunThread(threading.Thread):
 	def reloadTime(self):
 		self.workingdir = filter(img_only,dircache.listdir(self.dir))
 		self.workingdir_size = len(self.workingdir)
+		msg = "Selected image directory has no images! Please pick again."
 		if self.workingdir_size == 0:
-			self.showDialogError("Selected image directory has no images! Please pick again.");
+			self.showDialogError(msg)
 			self.set_dir()
 		self.updateLabel()
 
@@ -193,7 +193,7 @@ class RunThread(threading.Thread):
 		self.updateLabel()
 		self.countsec = 0
 		b = self.cdd_cmd % (self.dir + self.workingdir[self.file_count])
-		print b
+		print "SETTING: " + self.workingdir[self.file_count]
 		os.system(b)
 
 	def next(self):
@@ -205,8 +205,16 @@ class RunThread(threading.Thread):
 		self.do_change()
 	
 	def updateLabel(self):
+		self.lblDirectory.setText(str(self.dir))
 		m = str(self.file_count+1) + "/" + str(self.workingdir_size)
 		self.lblStatus.setText(m)
+		self.lblCurrent.setText(self.workingdir[self.file_count])
+		### TODO get best time label...like 360 seconds = 5 minutes
+		self.btnSpeed.setText(str(self.ticks) + "s")
+
+	def updateTicker(self):
+		self.countMenu.setText(str((self.ticks - self.countsec)+1))
+		self.countMenu.updateUI()
 	
 class YayGui(RunThread):
 	def __init__(self):
@@ -214,39 +222,82 @@ class YayGui(RunThread):
 		self.frame.windowClosing = self.goodbye
 		self.frame.contentPane.layout = awt.GridLayout(4,2)
 		panel = swing.JPanel()
-		###
+		### 		
+		# Menu Bar
+		##
+		#dividers up in here? or split across multiple menus on the bar?
 		menuBar = swing.JMenuBar()
 		editMenu = swing.JMenu("File")
-		#menuItemSettings = swing.JMenuItem("Settings",actionPerformed=self.showSettings) # will actually start it
 		menuItemReload = swing.JMenuItem("Reload Image Folder",actionPerformed=self.callReload)
 		menuItemChangeFolder = swing.JMenuItem("Change Image Folder",actionPerformed=self.callSetDir)
 		menuItemSetSpeed = swing.JMenuItem("Set Slideshow Speed",actionPerformed=self.showSpeedDialog)
-		#showDurLengthDialog
-		#dividers up in here? or split across multiple menus on the bar?
 		menuItemQuit = swing.JMenuItem("Quit",actionPerformed=self.goodbye)
-
 		editMenu.add(menuItemReload)	
 		editMenu.add(menuItemChangeFolder)
-		#editMenu.add(menuItemSettings)
 		editMenu.add(menuItemSetSpeed)
 		editMenu.add(menuItemQuit)
 		menuBar.add(editMenu)
-		self.frame.setJMenuBar(menuBar);
-		###
+		self.countMenu = swing.JMenu("")
+		menuBar.add(self.countMenu)
+		self.frame.setJMenuBar(menuBar)
+		### 		
+		# Top Panel
+		##
+		panelTop = swing.JPanel()
+		panelTop.layout = awt.GridLayout(1,1)
+		self.lblDirectory = swing.JLabel()
+		panelTop.add(self.lblDirectory)
+		panel.add(panelTop)
+		### 		
+		# Slideshow controls
+		##
+		panelControls = swing.JPanel()
+		panelControls.layout = awt.GridLayout(1,3)
 		self.btnPrev = swing.JButton('<<',actionPerformed=self.callLast)
-		panel.add(self.btnPrev)
+		panelControls.add(self.btnPrev)
 		self.btnStart = swing.JButton("Start", actionPerformed=self.callStart)
-		panel.add(self.btnStart)
+		panelControls.add(self.btnStart)
 		self.btnNext = swing.JButton('>>',actionPerformed=self.callNext)
-		panel.add(self.btnNext)
-		self.lblStatus = swing.JTextField("????????",7,keyPressed=self.callGoEnter)
-		panel.add(self.lblStatus)
+		panelControls.add(self.btnNext)
+		panel.add(panelControls)
+		### 		
+		# Go controls
+		##
+		panelGo = swing.JPanel()
+		panelGo.layout = awt.GridLayout(1,3)
+		self.lblStatus = swing.JTextField("????????",5,keyPressed=self.callGoEnter)
+		panelGo.add(self.lblStatus)
 		self.btnGo = swing.JButton('Go',actionPerformed=self.callGoClick)
-		panel.add(self.btnGo)
-		self.start_config()
-		self.frame.setContentPane(panel)
+		panelGo.add(self.btnGo)
+		self.btnSpeed = swing.JButton(actionPerformed=self.showSpeedDialog)
+		panelGo.add(self.btnSpeed)
+		panel.add(panelGo)
 
-		self.frame.size = (339,90)
+		###
+		# Sep
+		##
+		panelSep = swing.JPanel()
+		panelSep.add(swing.JSeparator())
+		panel.add(panelSep)
+		### 		
+		# Settings controls
+		##
+		panelSettings = swing.JPanel()
+		panelSettings.layout = awt.GridLayout(1,1)
+		self.lblCurrent = swing.JLabel()
+		panelSettings.add(self.lblCurrent)
+		panel.add(panelSettings)
+				
+		
+		###		
+		# get the non-gui part running
+		##
+		self.start_config() 
+		### 		
+		# Slideshow controls
+		##
+		self.frame.setContentPane(panel)
+		self.frame.size = (250,175)
 		self.frame.resizable = False
 		self.frame.show()
 	
