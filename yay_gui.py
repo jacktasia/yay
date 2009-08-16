@@ -30,6 +30,7 @@ class RunThread(threading.Thread):
 		self.has_dir = True
 		self.ticks = 30 #default
 		self.first_start = False
+		self.has_started = False
 		
 		app_name = 'Yay'
 		filename = 'config.pkl'
@@ -126,6 +127,22 @@ class RunThread(threading.Thread):
 		if i >= 0 and i < self.workingdir_size + 1:
 			self.file_count = i - 1
 			self.do_change()
+			
+	def prune(self):
+		was_playing = False
+		if not self.is_paused:
+			self.do_pause()
+			was_playing = True
+			
+		if not os.path.exists(self.dir + '_pruned'):
+			os.makedirs(self.dir + '_pruned')
+		os.rename(self.dir + self.workingdir[self.file_count],
+				  self.dir + '_pruned/' +  self.workingdir[self.file_count])
+		self.reloadTime()
+		if was_playing:
+			self.do_start()
+		self.do_change()
+		  
 
 	def last_off(self):
 		#this finds out the current desktop and if is the current selected folder...
@@ -146,7 +163,9 @@ class RunThread(threading.Thread):
 		self.do_change()
 
 	def doStart(self):
-		self.start()
+		if not self.has_started:
+			self.has_started = True
+			self.start()
 		self.do_change()
 		
 		
@@ -231,11 +250,13 @@ class YayGui(RunThread):
 		menuBar = swing.JMenuBar()
 		editMenu = swing.JMenu("File")
 		self.menuMiniMode = swing.JMenuItem("Mini Size",actionPerformed=self.callMiniMode)
+		menuItemPrune = swing.JMenuItem("Prune File",actionPerformed=self.callPrune)
 		menuItemReload = swing.JMenuItem("Reload Image Folder",actionPerformed=self.callReload)
 		menuItemChangeFolder = swing.JMenuItem("Change Image Folder",actionPerformed=self.callSetDir)
 		menuItemSetSpeed = swing.JMenuItem("Set Slideshow Speed",actionPerformed=self.showSpeedDialog)
 		menuItemQuit = swing.JMenuItem("Quit",actionPerformed=self.goodbye)
 		editMenu.add(self.menuMiniMode)
+		editMenu.add(menuItemPrune)
 		editMenu.add(menuItemReload)	
 		editMenu.add(menuItemChangeFolder)
 		editMenu.add(menuItemSetSpeed)
@@ -333,7 +354,8 @@ class YayGui(RunThread):
 		self.frame.preferredSize = self.mini_size
 		self.frame.pack()
         
-        
+	def callPrune(self,event):
+		self.prune()
 		
 	def showSpeedDialog(self,event): # bad name..should be setPauseLength or something
 		self.setSpeed()
@@ -407,14 +429,20 @@ class YayGui(RunThread):
 
 	def callStart(self,event):
 		if self.is_paused:
-			self.doStart()
-			self.is_paused = False
-			self.btnStart.setText("Pause")
-
+			self.do_start()
 		else:
-			self.pause()
-			self.is_paused = True
-			self.btnStart.setText("Start")
+			self.do_pause()
+	
+	
+	def do_start(self):
+		self.doStart()
+		self.is_paused = False
+		self.btnStart.setText("Pause")
+	
+	def do_pause(self):
+		self.pause()
+		self.is_paused = True
+		self.btnStart.setText("Start")	
 	
 	def goodbye(self,event):
 		sys.exit()
