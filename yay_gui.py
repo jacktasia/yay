@@ -236,7 +236,7 @@ class RunThread(threading.Thread):
 	
 class YayGui(RunThread):
 	def __init__(self):
-		self.frame = swing.JFrame('Yay')
+		self.frame = swing.JFrame('Yay Desktop')
 		self.frame.windowClosing = self.goodbye
 		self.frame.contentPane.layout = awt.GridLayout(4,2)
 		panel = swing.JPanel()
@@ -248,21 +248,27 @@ class YayGui(RunThread):
 		##
 		#dividers up in here? or split across multiple menus on the bar?
 		menuBar = swing.JMenuBar()
-		editMenu = swing.JMenu("File")
+		fileMenu = swing.JMenu("File")
+		editMenu = swing.JMenu("Edit")
+		viewMenu = swing.JMenu("View")
+		self.countMenu = swing.JMenu("")
 		self.menuMiniMode = swing.JMenuItem("Mini Size",actionPerformed=self.callMiniMode)
 		menuItemPrune = swing.JMenuItem("Prune File",actionPerformed=self.callPrune)
 		menuItemReload = swing.JMenuItem("Reload Image Folder",actionPerformed=self.callReload)
 		menuItemChangeFolder = swing.JMenuItem("Change Image Folder",actionPerformed=self.callSetDir)
 		menuItemSetSpeed = swing.JMenuItem("Set Slideshow Speed",actionPerformed=self.showSpeedDialog)
 		menuItemQuit = swing.JMenuItem("Quit",actionPerformed=self.goodbye)
-		editMenu.add(self.menuMiniMode)
-		editMenu.add(menuItemPrune)
-		editMenu.add(menuItemReload)	
-		editMenu.add(menuItemChangeFolder)
+		
+		viewMenu.add(self.menuMiniMode)
 		editMenu.add(menuItemSetSpeed)
-		editMenu.add(menuItemQuit)
+		editMenu.add(menuItemPrune)
+		fileMenu.add(menuItemChangeFolder)
+		fileMenu.add(menuItemReload)	
+		fileMenu.add(menuItemQuit)
+		
+		menuBar.add(fileMenu)
 		menuBar.add(editMenu)
-		self.countMenu = swing.JMenu("")
+		menuBar.add(viewMenu)
 		menuBar.add(self.countMenu)
 		self.frame.setJMenuBar(menuBar)
 		### 		
@@ -289,13 +295,15 @@ class YayGui(RunThread):
 		# Go controls
 		##
 		panelGo = swing.JPanel()
-		panelGo.layout = awt.GridLayout(1,3)
-		self.lblStatus = swing.JTextField("????????",4,keyPressed=self.callGoEnter)
+		panelGo.layout = awt.GridLayout(1,5)
+		panelGo.add(swing.JLabel(" "))
+		self.lblStatus = swing.JTextField("????????",3,keyPressed=self.callGoEnter)
 		panelGo.add(self.lblStatus)
 		self.btnGo = swing.JButton('Go',actionPerformed=self.callGoClick)
 		panelGo.add(self.btnGo)
 		self.btnSpeed = swing.JButton(actionPerformed=self.showSpeedDialog)
 		panelGo.add(self.btnSpeed)
+		panelGo.add(swing.JLabel(" "))
 		panel.add(panelGo)
 
 		###
