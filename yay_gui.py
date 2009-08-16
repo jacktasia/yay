@@ -124,7 +124,6 @@ class RunThread(threading.Thread):
 
 	def goto_img(self,i):
 		if i >= 0 and i < self.workingdir_size + 1:
-			print "setting"
 			self.file_count = i - 1
 			self.do_change()
 
@@ -222,16 +221,21 @@ class YayGui(RunThread):
 		self.frame.windowClosing = self.goodbye
 		self.frame.contentPane.layout = awt.GridLayout(4,2)
 		panel = swing.JPanel()
+		self.is_mini = False
+		self.normal_size = (250,175)
+		self.mini_size = (210,120)
 		### 		
 		# Menu Bar
 		##
 		#dividers up in here? or split across multiple menus on the bar?
 		menuBar = swing.JMenuBar()
 		editMenu = swing.JMenu("File")
+		self.menuMiniMode = swing.JMenuItem("Mini Size",actionPerformed=self.callMiniMode)
 		menuItemReload = swing.JMenuItem("Reload Image Folder",actionPerformed=self.callReload)
 		menuItemChangeFolder = swing.JMenuItem("Change Image Folder",actionPerformed=self.callSetDir)
 		menuItemSetSpeed = swing.JMenuItem("Set Slideshow Speed",actionPerformed=self.showSpeedDialog)
 		menuItemQuit = swing.JMenuItem("Quit",actionPerformed=self.goodbye)
+		editMenu.add(self.menuMiniMode)
 		editMenu.add(menuItemReload)	
 		editMenu.add(menuItemChangeFolder)
 		editMenu.add(menuItemSetSpeed)
@@ -243,11 +247,11 @@ class YayGui(RunThread):
 		### 		
 		# Top Panel
 		##
-		panelTop = swing.JPanel()
-		panelTop.layout = awt.GridLayout(1,1)
+		self.panelTop = swing.JPanel()
+		self.panelTop.layout = awt.GridLayout(1,1)
 		self.lblDirectory = swing.JLabel()
-		panelTop.add(self.lblDirectory)
-		panel.add(panelTop)
+		self.panelTop.add(self.lblDirectory)
+		panel.add(self.panelTop)
 		### 		
 		# Slideshow controls
 		##
@@ -265,7 +269,7 @@ class YayGui(RunThread):
 		##
 		panelGo = swing.JPanel()
 		panelGo.layout = awt.GridLayout(1,3)
-		self.lblStatus = swing.JTextField("????????",5,keyPressed=self.callGoEnter)
+		self.lblStatus = swing.JTextField("????????",4,keyPressed=self.callGoEnter)
 		panelGo.add(self.lblStatus)
 		self.btnGo = swing.JButton('Go',actionPerformed=self.callGoClick)
 		panelGo.add(self.btnGo)
@@ -276,17 +280,17 @@ class YayGui(RunThread):
 		###
 		# Sep
 		##
-		panelSep = swing.JPanel()
-		panelSep.add(swing.JSeparator())
-		panel.add(panelSep)
+		self.panelSep = swing.JPanel()
+		self.panelSep.add(swing.JSeparator())
+		panel.add(self.panelSep)
 		### 		
 		# Settings controls
 		##
-		panelSettings = swing.JPanel()
-		panelSettings.layout = awt.GridLayout(1,1)
+		self.panelSettings = swing.JPanel()
+		self.panelSettings.layout = awt.GridLayout(1,1)
 		self.lblCurrent = swing.JLabel()
-		panelSettings.add(self.lblCurrent)
-		panel.add(panelSettings)
+		self.panelSettings.add(self.lblCurrent)
+		panel.add(self.panelSettings)
 				
 		
 		###		
@@ -297,10 +301,40 @@ class YayGui(RunThread):
 		# Slideshow controls
 		##
 		self.frame.setContentPane(panel)
-		self.frame.size = (250,175)
+		self.frame.size = self.normal_size
 		self.frame.resizable = False
 		self.frame.show()
 	
+
+	def callMiniMode(self,event):
+		if not self.is_mini:
+			self.startMiniMode()
+			self.menuMiniMode.setText("Normal Size")
+			self.is_mini = True
+		else:
+			self.endMiniMode()
+			self.menuMiniMode.setText("Mini Size")
+			self.is_mini = False
+ 
+ 
+ 	def endMiniMode(self):
+		print "starting mini mode"
+		self.panelTop.setVisible(True)
+		self.panelSep.setVisible(True)
+		self.panelSettings.setVisible(True)
+		self.frame.preferredSize = self.normal_size
+		self.frame.pack()
+    
+	def startMiniMode(self):
+		print "starting mini mode"
+		self.panelTop.setVisible(False)
+		self.panelSep.setVisible(False)
+		self.panelSettings.setVisible(False)
+		self.frame.preferredSize = self.mini_size
+		self.frame.pack()
+        
+        
+		
 	def showSpeedDialog(self,event): # bad name..should be setPauseLength or something
 		self.setSpeed()
 
@@ -308,7 +342,7 @@ class YayGui(RunThread):
 		a = swing.JOptionPane.showInputDialog(
                     None,
                    "How many seconds before changing background?",
-		   "Set Slideshow Speed",
+                   "Set Slideshow Speed",
                     swing.JOptionPane.PLAIN_MESSAGE,
                     None,
                     None,
@@ -351,6 +385,8 @@ class YayGui(RunThread):
 			self.set_ticks(ticks)
 		elif reqt.find('setdir') != -1:
 			self.set_dir()
+		elif reqt.find('/') != -1:
+			self.goto_img(int(reqt.split('/')[0]))
 		else:
 			self.goto_img(int(reqt))
 
