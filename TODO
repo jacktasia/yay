@@ -1,5 +1,10 @@
 TODO
 
+
+-- crop long image dir in label
+
+-- handle if saved pictures directory is not found on start up...Change Dir / Quit ...dialog
+
 -- better handling of TIME display/SET speed in more user friendly way...
 
 -- prune feature - vote up and down...
