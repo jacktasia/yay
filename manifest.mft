@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 X-COMMENT: Main-Class will be added automatically by build
 Main-Class: Main
-Class-Path: .\MyJar.jar jython.jar Lib/
+Class-Path: .\yaydesktop.jar jython.jar Lib/
 
 
 
