@@ -6,8 +6,10 @@
 import java.awt as awt
 import javax.swing as swing
 import java.lang as lang
-from java.lang import System
-from java.io import File
+#from java.lang import System
+#from java.io import File
+import java.lang.System as System
+import java.io.File as File
 
 import threading
 import dircache
@@ -35,10 +37,13 @@ class RunThread(threading.Thread):
 		
 		app_name = 'Yay'
 		filename = 'config.pkl'
-		if os_name == 'Windows':
+		print os_name
+		if os_name == 'Windows XP':
 		    self.config_dir = os.environ["APPDATA"] + self.os_sep + app_name + self.os_sep
+		    self.os = 'win'
 		else:
 		    self.config_dir = os.path.expanduser("~") + self.os_sep + '.' + app_name + self.os_sep
+		    self.os = 'other'
 		self.config_path = self.config_dir + filename #'server_config.ini'
 		self.dir = ''
 		if not os.path.exists(self.config_dir):
@@ -211,9 +216,14 @@ class RunThread(threading.Thread):
 	def do_change(self):
 		self.updateLabel()
 		self.countsec = 0
-		b = self.cdd_cmd % (self.dir + self.workingdir[self.file_count])
+		if self.os == 'win':
+			import win
+			win.make_bg(self.dir + self.workingdir[self.file_count])
+		else:
+			b = self.cdd_cmd % (self.dir + self.workingdir[self.file_count])
+			os.system(b)
 		print "SETTING: " + self.workingdir[self.file_count]
-		os.system(b)
+		
 
 	def next(self):
 		if self.file_count+1 < self.workingdir_size:
@@ -224,7 +234,9 @@ class RunThread(threading.Thread):
 		self.do_change()
 	
 	def updateLabel(self):
-		self.lblDirectory.setText(str(self.dir))
+		b = str(self.dir).split(self.os_sep)
+		r = b[len(b)-2]
+		self.lblDirectory.setText(r)
 		m = str(self.file_count+1) + "/" + str(self.workingdir_size)
 		self.lblStatus.setText(m)
 		self.lblCurrent.setText(self.workingdir[self.file_count])

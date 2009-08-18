@@ -42,7 +42,13 @@ def make_bg(src):
 	reload_bg()
 		
 
-def bmp_name(src):
+def bmp_name(f):
+	import md5
+	m = md5.new()
+	m.update(f)
+	return "C:\\Windows\\Temp\\" + m.hexdigest() + '.bmp'
+
+def bmp_name_old(src):
 	a = src.split('.')
 	b = str(a[:len(a)-1][0]) + '.bmp'
 	return b
