@@ -1,8 +1,8 @@
-#!/home/v/jython2.5.0/bin/jython
 # jack angers
 # jacktasia@gmail.com
 # boo
 
+import sys
 import java.awt as awt
 import javax.swing as swing
 import java.lang as lang
@@ -14,7 +14,7 @@ import java.io.File as File
 import threading
 import dircache
 import os
-import sys
+#import sys
 import pickle
 import math
 
