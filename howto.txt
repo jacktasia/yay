@@ -1,2 +1,0 @@
-jar cvfm yaydesktop.jar manifest.mft Main.class YayFactory.class YayType.class JythonFaory.class yay_gui.py win.py jython.jar Lib/
-
