@@ -1,11 +1,14 @@
 TODO
 
+-- write script to auto process of creating jar
 
--- crop long image dir in label
+-- "smart" resize -- see rez of computer and change file rez to equal or below but keep ratio
+
+-- Ability to specify pattern style (stretch, tile, center, etc)
+-- Ability to minimize to system tray. IS NEXT
+-- Ability to pull in images from nested folders.
 
 -- handle if saved pictures directory is not found on start up...Change Dir / Quit ...dialog
-
--- better handling of TIME display/SET speed in more user friendly way...
 
 -- prune feature - vote up and down...
 
