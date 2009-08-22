@@ -6,7 +6,7 @@ import javax.swing as swing
 def tryTray():
 	tray = awt.SystemTray.getSystemTray()
 	popup = awt.PopupMenu()
-	icon = awt.Toolkit.getDefaultToolkit().getImage("yay16.png") 
+	icon = awt.Toolkit.getDefaultToolkit().getImage("yay24.png") 
 
 	trayIcon = awt.TrayIcon(icon,"yay", popup)
 	tray.add(trayIcon)
