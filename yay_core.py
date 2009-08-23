@@ -69,7 +69,6 @@ class YayCore(threading.Thread):
 
 		self._stopevent = threading.Event()
 		self._sleepperiod = 1.0
-		self.cdd_cmd = "gconftool-2 --set /desktop/gnome/background/picture_filename --type=string \"%s\""
 		
 		threading.Thread.__init__(self,name='GoGo')
 		self.file_count = 0;
@@ -213,12 +212,13 @@ class YayCore(threading.Thread):
 	def do_change(self):
 		self.updateLabel()
 		self.countsec = 0
+		## TODO do the check in __init__ and then import correct change_desktop
 		if self.os == 'win':
-			import win
-			win.make_bg(self.dir + self.workingdir[self.file_count])
+			import yay_windows
+			yay_windows.change_desktop(self.dir + self.workingdir[self.file_count])
 		else:
-			b = self.cdd_cmd % (self.dir + self.workingdir[self.file_count])
-			os.system(b)
+			import yay_gnome
+			yay_gnome.change_desktop(self.dir + self.workingdir[self.file_count])
 		print "SETTING: " + self.workingdir[self.file_count]
 		
 

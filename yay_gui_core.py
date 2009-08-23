@@ -1,3 +1,6 @@
+# jack angers
+# jacktasia@gmail.com
+# boo
 
 import sys
 import java.awt as awt
@@ -24,7 +27,6 @@ class YayGuiCore:
 		### 		
 		# Menu Bar
 		##
-		#dividers up in here? or split across multiple menus on the bar?
 		menuBar = swing.JMenuBar()
 		fileMenu = swing.JMenu("File")
 		editMenu = swing.JMenu("Edit")

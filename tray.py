@@ -1,8 +1,10 @@
+# jack angers
+# jacktasia@gmail.com
+# boo
+
 import java.awt as awt
 import javax.swing as swing
 import sys
-## Just testing...should be more generic (passed icon_file,title)
-
 
 class YaySystemTray:
 	def buildSystemTray(self):

@@ -1,9 +1,10 @@
+# jack angers
+# jacktasia@gmail.com
+# boo
+
 import java.io.File as File
 import javax.imageio.ImageIO as ImageIO
-
 import os
-
-
 
 def reload_bg():
 	print "running rundll"
@@ -33,7 +34,7 @@ def jpg2bmp(src):
 	output = File(b)
 	ImageIO.write(image,"bmp",output)
 		
-def make_bg(src):
+def change_desktop(src):
 	if not bmp_exists(src):
 		jpg2bmp(src)
 		
