@@ -14,7 +14,9 @@ if __name__ == '__main__':
 	runit('rm *.class')
 	runit('rm yay.jar')
 	
-	runit('rm ~/Desktop/yar.jar')
+	runit('rm ~/Desktop/yay.jar')
+	
+	runit('rm -rf ~/Desktop/cachedir')
 	
 	runit("javac -classpath jythonlib.jar *.java")
 	
