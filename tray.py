@@ -4,6 +4,7 @@
 
 import java.awt as awt
 import javax.swing as swing
+from java.lang import Object
 import sys
 
 class YaySystemTray:
@@ -14,13 +15,16 @@ class YaySystemTray:
 		if sizeWant in sizesHave:
 			trayfile = "yay%i.gif" % (sizeWant)
 		else:
-			trayfile = 'yay16.gif'
+			trayfile = "yay16.gif"
 		self.popup = awt.PopupMenu()
 		exitItem = awt.MenuItem("Exit",actionPerformed=self.callExit)
 		self.popup.add(exitItem)
 		self.showHideItem = awt.MenuItem("Hide",actionPerformed=self.handleShowHide)
 		self.popup.add(self.showHideItem)
+		#icon = __class__.getResource(trayfile) #look inside jar #
+		#print icon.toString()
 		icon = awt.Toolkit.getDefaultToolkit().getImage(trayfile) 
+		#print icon.toString()
 		trayIcon = awt.TrayIcon(icon,"Yay Desktop", self.popup, mousePressed=self.showTrayMenu)
 		tray.add(trayIcon)
 		
