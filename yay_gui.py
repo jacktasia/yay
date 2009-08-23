@@ -235,9 +235,20 @@ class YayGui(YayCore,YayGuiCore,YaySystemTray):
 		self.pause()
 		self.is_paused = True
 		self.btnStart.setText("Start")	
+		
+	def showFrame(self):
+		self.frame.show()
+		
+	def hideFrame(self):
+		self.frame.hide()
 	
 	def goodbye(self,event):
+		self.doExit()
+		
+	def doExit(self):
+		## have them confirm exit...
 		sys.exit()
+		System.exit()
 
 if __name__ == '__main__':
 	y = YayGui()

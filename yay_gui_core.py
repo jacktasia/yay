@@ -18,7 +18,7 @@ class YayGuiCore:
 	def buildGui(self):
 		
 		self.frame = swing.JFrame('Yay Desktop')
-		self.frame.windowClosing = self.goodbye
+		self.frame.windowClosing = self.handleShowHide
 		self.frame.contentPane.layout = awt.GridLayout(4,2)
 		panel = swing.JPanel()
 		### 		
@@ -35,7 +35,8 @@ class YayGuiCore:
 		menuItemReload = swing.JMenuItem("Reload Image Folder",actionPerformed=self.callReload)
 		menuItemChangeFolder = swing.JMenuItem("Change Image Folder",actionPerformed=self.callSetDir)
 		menuItemSetSpeed = swing.JMenuItem("Set Slideshow Speed",actionPerformed=self.showSpeedDialog)
-		menuItemQuit = swing.JMenuItem("Quit",actionPerformed=self.goodbye)
+		menuHide = swing.JMenuItem("Hide",actionPerformed=self.handleShowHide)
+		menuItemQuit = swing.JMenuItem("Exit",actionPerformed=self.goodbye)
 		
 		viewMenu.add(self.menuMiniMode)
 		editMenu.add(menuItemSetSpeed)
@@ -44,6 +45,7 @@ class YayGuiCore:
 		fileMenu.add(menuItemChangeFolder)
 		fileMenu.add(menuItemReload)
 		fileMenu.addSeparator()
+		fileMenu.add(menuHide)
 		fileMenu.add(menuItemQuit)
 		
 		menuBar.add(fileMenu)
