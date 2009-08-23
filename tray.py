@@ -14,7 +14,7 @@ class YaySystemTray:
 		self.popup.add(exitItem)
 		self.showHideItem = awt.MenuItem("Hide",actionPerformed=self.handleShowHide)
 		self.popup.add(self.showHideItem)
-		icon = awt.Toolkit.getDefaultToolkit().getImage("yay24.png") 
+		icon = awt.Toolkit.getDefaultToolkit().getImage("yay16.gif") 
 		trayIcon = awt.TrayIcon(icon,"yay", self.popup, mousePressed=self.showTrayMenu)
 		tray.add(trayIcon)
 		
