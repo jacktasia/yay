@@ -13,18 +13,15 @@ class YaySystemTray:
 		sizeWant = tray.getTrayIconSize().width
 		sizesHave = (16,24,32,64)
 		if sizeWant in sizesHave:
-			trayfile = "yay%i.gif" % (sizeWant)
+			trayfile = "/yay%i.gif" % (sizeWant)
 		else:
-			trayfile = "yay16.gif"
+			trayfile = "/yay16.gif"
 		self.popup = awt.PopupMenu()
 		exitItem = awt.MenuItem("Exit",actionPerformed=self.callExit)
 		self.popup.add(exitItem)
 		self.showHideItem = awt.MenuItem("Hide",actionPerformed=self.handleShowHide)
 		self.popup.add(self.showHideItem)
-		#icon = __class__.getResource(trayfile) #look inside jar #
-		#print icon.toString()
-		icon = awt.Toolkit.getDefaultToolkit().getImage(trayfile) 
-		#print icon.toString()
+		icon = awt.Toolkit.getDefaultToolkit().getImage(Object().getClass().getResource(trayfile))
 		trayIcon = awt.TrayIcon(icon,"Yay Desktop", self.popup, mousePressed=self.showTrayMenu)
 		tray.add(trayIcon)
 		
