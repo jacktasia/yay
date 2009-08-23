@@ -243,3 +243,6 @@ class YayCore(threading.Thread):
 	def updateTicker(self):
 		self.countMenu.setText(str((self.ticks - self.countsec)+1))
 		self.countMenu.updateUI()
+		
+	def join(self,timeout=None):
+		print "hrm"

@@ -247,8 +247,7 @@ class YayGui(YayCore,YayGuiCore,YaySystemTray):
 		
 	def doExit(self):
 		## have them confirm exit...
-		sys.exit()
-		System.exit()
+		System.exit(0)
 
 if __name__ == '__main__':
 	y = YayGui()
