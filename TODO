@@ -1,8 +1,15 @@
 TODO
 
+
+--- error on View Mini see below on preferredLayoutSize
+
+-- remove created cachedir on start?
+
+-- repo for good wallpapers
+
+-- pruning issue, doesn't happen until .next()
+
 -- support for: vista/7,KDE, and maybe mac.
-
-
 
 -- "smart" resize -- Image.getScaledInstance() see rez of computer and change file rez to equal or below but keep ratio
 
@@ -19,3 +26,31 @@ TODO
 -- have option to start slideshow on start up
 
 -- feature to view all images on maxed screen ...maybe 4 to a screen with their and voting....BIG VIEW
+
+
+
+ERROR:
+
+Exception in thread "AWT-EventQueue-0" java.lang.NullPointerException
+        at javax.swing.BoxLayout.preferredLayoutSize(Unknown Source)
+        at javax.swing.plaf.basic.DefaultMenuLayout.preferredLayoutSize(Unknown
+Source)
+        at java.awt.Container.preferredSize(Unknown Source)
+        at java.awt.Container.getPreferredSize(Unknown Source)
+        at javax.swing.JComponent.getPreferredSize(Unknown Source)
+        at javax.swing.JRootPane$RootLayout.layoutContainer(Unknown Source)
+        at java.awt.Container.layout(Unknown Source)
+        at java.awt.Container.doLayout(Unknown Source)
+        at java.awt.Container.validateTree(Unknown Source)
+        at java.awt.Container.validate(Unknown Source)
+        at javax.swing.RepaintManager.validateInvalidComponents(Unknown Source)
+        at javax.swing.SystemEventQueueUtilities$ComponentWorkRequest.run(Unknow
+n Source)
+        at java.awt.event.InvocationEvent.dispatch(Unknown Source)
+        at java.awt.EventQueue.dispatchEvent(Unknown Source)
+        at java.awt.EventDispatchThread.pumpOneEventForFilters(Unknown Source)
+        at java.awt.EventDispatchThread.pumpEventsForFilter(Unknown Source)
+        at java.awt.EventDispatchThread.pumpEventsForHierarchy(Unknown Source)
+        at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+        at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+        at java.awt.EventDispatchThread.run(Unknown Source)
