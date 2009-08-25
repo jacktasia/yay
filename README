@@ -1,3 +1,5 @@
-This is a jython app. I'll have a stable build in the Downloads section by the end of August. If you can't wait email and I'll get you one.
+This is a jython app. MIT License.
 
+It makes your XP or gnome desktop a slideshow of an image folder (Like on OSX and Win7)
 
+I have a stable build in the Downloads section. You probably need the newest version of java to run the jar. You don't need jython unless you want to run from source.
