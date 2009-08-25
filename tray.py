@@ -1,6 +1,5 @@
-# jack angers
-# jacktasia@gmail.com
-# boo
+# Copyright (c) 2009 John (Jack) Angers, jacktasia@gmail.com
+# Licensed under the terms of the MIT License (see LICENSE.txt)
 
 import java.awt as awt
 import javax.swing as swing

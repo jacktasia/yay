@@ -1,3 +1,5 @@
+# Copyright (c) 2009 John (Jack) Angers, jacktasia@gmail.com
+# Licensed under the terms of the MIT License (see LICENSE.txt)
 
 import os
 JYTHON_PATH = '/home/v/jython2.5.0/'

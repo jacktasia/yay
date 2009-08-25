@@ -1,6 +1,5 @@
-# jack angers
-# jacktasia@gmail.com
-# boo
+# Copyright (c) 2009 John (Jack) Angers, jacktasia@gmail.com
+# Licensed under the terms of the MIT License (see LICENSE.txt)
 
 import sys
 import java.awt as awt
@@ -20,7 +19,7 @@ class YayGuiCore:
 
 	def buildGui(self):
 		
-		self.frame = swing.JFrame('Yay Desktop')
+		self.frame = swing.JFrame('Yay Desktop 0.7')
 		self.frame.windowClosing = self.handleShowHide
 		self.frame.contentPane.layout = awt.GridLayout(4,2)
 		panel = swing.JPanel()

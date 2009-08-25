@@ -1,6 +1,5 @@
-# jack angers
-# jacktasia@gmail.com
-# boo
+# Copyright (c) 2009 John (Jack) Angers, jacktasia@gmail.com
+# Licensed under the terms of the MIT License (see LICENSE.txt)
 
 import java.io.File as File
 import javax.imageio.ImageIO as ImageIO
