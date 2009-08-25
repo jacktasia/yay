@@ -10,7 +10,8 @@ import sys
 class YaySystemTray:
 	def buildSystemTray(self):
 		tray = awt.SystemTray.getSystemTray()
-		sizeWant = tray.getTrayIconSize().width
+		sizeWantWidth = tray.getTrayIconSize().width
+		sizeWantHeight = tray.getTrayIconSize().height
 		trayfile = "/yay64.gif"
 		self.popup = awt.PopupMenu()
 		exitItem = awt.MenuItem("Exit",actionPerformed=self.callExit)
@@ -18,7 +19,7 @@ class YaySystemTray:
 		self.showHideItem = awt.MenuItem("Hide",actionPerformed=self.handleShowHide)
 		self.popup.add(self.showHideItem)
 		icon = awt.Toolkit.getDefaultToolkit().getImage(Object().getClass().getResource(trayfile))
-		scaledIcon = icon.getScaledInstance(sizeWant,sizeWant,0)
+		scaledIcon = icon.getScaledInstance(sizeWantWidth,sizeWantHeight,0)
 		trayIcon = awt.TrayIcon(scaledIcon,"Yay Desktop", self.popup, mousePressed=self.handleShowHide)
 		tray.add(trayIcon)
 		

@@ -22,7 +22,7 @@ from yay_gui_core import YayGuiCore
 class YayGui(YayCore,YayGuiCore,YaySystemTray):
 	def __init__(self):
 		self.is_mini = False
-		self.normal_size = (210,130)
+		self.normal_size = (220,130)
 		self.buildSystemTray()
 		self.buildGui()			
 		###		

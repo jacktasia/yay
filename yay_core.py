@@ -35,7 +35,7 @@ class YayCore(threading.Thread):
 		app_name = 'Yay'
 		filename = 'config.pkl'
 		print os_name
-		if os_name == 'Windows XP':
+		if os_name.find('Windows') != -1:
 		    self.config_dir = os.environ["APPDATA"] + self.os_sep + app_name + self.os_sep
 		    self.os = 'win'
 		else:
