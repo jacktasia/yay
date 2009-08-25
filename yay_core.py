@@ -62,7 +62,8 @@ class YayCore(threading.Thread):
 		if self.dir == '':
 			## this should be a dialog alert...
 			print "quitting"
-			sys.exit()
+			#sys.exit()
+			System.exit(0)
 		else:
 			print self.dir
 
@@ -90,9 +91,11 @@ class YayCore(threading.Thread):
 		dir = self.getDirectory()
 		self.set_config('browse_folder',dir)
 		self.has_dir = True
+		old_dir = self.dir
 		self.dir = dir 
 		self.loadup()
-		#self.do_change()
+		if dir != old_dir:
+			self.do_change()
 
 	def set_speed(self,s):
 		self.set_config('speed',s)
@@ -154,7 +157,6 @@ class YayCore(threading.Thread):
 		b = cur_path.split('/')
 		cur_path = b[len(b)-1]
 		for a in self.workingdir:
-			print "%s == %s" % (a,cur_path)
 			if a == cur_path:
 				found = count
 				break
@@ -170,10 +172,8 @@ class YayCore(threading.Thread):
 			self.start()
 		self.do_change()
 		
-		
 	def pause(self):
 		if not self.is_paused:
-
 			self.is_paused = True
 		else:
 			self.is_paused = False
@@ -227,18 +227,15 @@ class YayCore(threading.Thread):
 			self.file_count += 1
 		else:
 			self.loadup()
-
 		self.do_change()
 	
 	def updateLabel(self):
 		b = str(self.dir).split(self.os_sep)
 		r = b[len(b)-2]
-		self.lblDirectory.setText(r)
+		self.lblDirectory.setText(r + "  ")
 		m = str(self.file_count+1) + "/" + str(self.workingdir_size)
 		self.lblStatus.setText(m)
-		self.lblCurrent.setText(self.workingdir[self.file_count])
-		### TODO get best time label...like 360 seconds = 5 minutes
-		self.btnSpeed.setText(str(self.ticks) + "s")
+		self.lblCurrent.setText(self.workingdir[self.file_count] + "  ")
 
 	def updateTicker(self):
 		self.countMenu.setText(str((self.ticks - self.countsec)+1))

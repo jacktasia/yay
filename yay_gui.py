@@ -21,56 +21,35 @@ from yay_gui_core import YayGuiCore
 
 class YayGui(YayCore,YayGuiCore,YaySystemTray):
 	def __init__(self):
-		
 		self.is_mini = False
-		self.normal_size = (250,175)
-		self.mini_size = (210,120)
-		
+		self.normal_size = (210,130)
 		self.buildSystemTray()
-		
-		self.buildGui()
-				
+		self.buildGui()			
 		###		
 		# get the non-gui part running
 		##
 		self.start_config() 
 
-	
-
-	def callMiniMode(self,event):
-		if not self.is_mini:
-			self.startMiniMode()
-			self.menuMiniMode.setText("Normal Size")
-			self.is_mini = True
-		else:
-			self.endMiniMode()
-			self.menuMiniMode.setText("Mini Size")
-			self.is_mini = False
- 
- 
- 	def endMiniMode(self):
-		print "starting mini mode"
-		self.panelTop.setVisible(True)
-		self.panelSep.setVisible(True)
-		self.panelSettings.setVisible(True)
-		self.frame.preferredSize = self.normal_size
-		self.frame.pack()
-    
-	def startMiniMode(self):
-		print "starting mini mode"
-		self.panelTop.setVisible(False)
-		self.panelSep.setVisible(False)
-		self.panelSettings.setVisible(False)
-		self.frame.preferredSize = self.mini_size
-		self.frame.pack()
-        
 	def callPrune(self,event):
-		self.prune()
+		
+		options = ("Prune it!",
+					"Don't move my files!")
+		x = swing.JOptionPane.showOptionDialog(
+					None,
+					"This will move this image file into a subfolder called '_pruned' This will remove it from the slide show.",
+					"Slideshow Speed",
+					swing.JOptionPane.YES_NO_OPTION,
+					swing.JOptionPane.QUESTION_MESSAGE,
+					None,
+					options,
+					options[1])	
+		x = int(x)
+		if x == 0:
+			self.prune()
 		
 	def showSpeedDialog(self,event): # bad name..should be setPauseLength or something
 		self.setSpeed()
 		
-	
 	def add_s(self,num,word):
 		num = math.floor(num)
 		if num == 1:
@@ -81,17 +60,14 @@ class YayGui(YayCore,YayGuiCore,YaySystemTray):
 	def pretty_speed(self,s):
 		m = 0
 		h = 0
-
 		if s > 60:
 			m = s/60
 		else:
 			return self.add_s(s,'second')
-			
 		if m > 60:
 			h = m/60
 		else:
 			return self.add_s(m,'minute')
-			
 		return self.add_s(h,'hour')
 
 	def setSpeed(self):
@@ -147,7 +123,6 @@ class YayGui(YayCore,YayGuiCore,YaySystemTray):
 			if save != 0:
 				self.set_speed(opt_values[save])
 				
-	
 	def setAdvancedSpeed(self):
 		a = swing.JOptionPane.showInputDialog(
                     None,
@@ -175,7 +150,6 @@ class YayGui(YayCore,YayGuiCore,YaySystemTray):
 			"Error: Boo...",
 			swing.JOptionPane.ERROR_MESSAGE)
 
-	
 	def callSetDir(self,event):
 		self.set_dir()
 
