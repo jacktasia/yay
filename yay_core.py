@@ -194,8 +194,14 @@ class YayCore(threading.Thread):
 		self.reloadTime()
 
 	def reloadTime(self):
-		self.workingdir = filter(img_only,dircache.listdir(self.dir))
-		self.workingdir_size = len(self.workingdir)
+		try:
+			self.workingdir = filter(img_only,dircache.listdir(self.dir))
+			self.workingdir_size = len(self.workingdir)
+		except OSError:
+			self.showDialogError("Path doesn't seem to exist. Unattached Network or External Drive? Pick one")
+			self.set_dir()
+			return
+			
 		msg = "Selected image directory has no images! Please pick again."
 		if self.workingdir_size == 0:
 			self.showDialogError(msg)
