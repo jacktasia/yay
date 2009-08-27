@@ -25,9 +25,6 @@ class YaySystemTray:
 	def callExit(self,event):
 		self.doExit()
 		
-	def showTrayMenu(self,event):
-		print "showing window"
-		
 	def handleShowHide(self,event):
 		cur_val = self.showHideItem.getLabel()
 		if cur_val == "Hide":

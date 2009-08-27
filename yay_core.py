@@ -34,11 +34,12 @@ class YayCore(threading.Thread):
 		self.first_start = False
 		self.has_started = False
 		app_name = 'Yay'
-		print os_name # TODO log
+		print "Operating System: %s." % os_name
 		if os_name.find('Windows') != -1:
 		    self.os = 'win'
 		else:
 		    self.os = 'other'
+
 		self.prefs = Preferences.userNodeForPackage(YayPrefs().getClass())
 		self.dir = self.prefs.get('image_folder','')
 		self.ticks = self.prefs.getInt('speed',30)
@@ -46,6 +47,8 @@ class YayCore(threading.Thread):
 			self.set_dir()
 		else:
 			print self.dir
+			
+		print "Image folder: %s." % self.dir
 		self._stopevent = threading.Event()
 		self._sleepperiod = 1.0
 		threading.Thread.__init__(self,name='GoGo')
@@ -170,7 +173,7 @@ class YayCore(threading.Thread):
 		else:
 			import yay_gnome
 			yay_gnome.change_desktop(self.dir + self.workingdir[self.file_count])
-		print "SETTING: " + self.workingdir[self.file_count]
+		print "Setting next background image: %s." % self.workingdir[self.file_count]
 		
 
 	def next(self):
@@ -186,11 +189,12 @@ class YayCore(threading.Thread):
 		self.lblDirectory.setText(r + "  ")
 		m = str(self.file_count+1) + "/" + str(self.workingdir_size)
 		self.lblStatus.setText(m)
-		self.lblCurrent.setText(self.workingdir[self.file_count] + "  ")
+		cur_file = str(self.workingdir[self.file_count])
+		if len(cur_file) >= 26:
+			cur_file = cur_file[:25] + '...'
+		self.lblCurrent.setText(cur_file)
 
 	def updateTicker(self):
 		self.countMenu.setText(str((self.ticks - self.countsec)+1))
 		self.countMenu.updateUI()
-		
-	def join(self,timeout=None):
-		print "hrm"
+

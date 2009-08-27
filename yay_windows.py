@@ -6,7 +6,6 @@ import javax.imageio.ImageIO as ImageIO
 import os
 
 def reload_bg():
-	print "running rundll"
 	c = "RUNDLL32.EXE user32.dll,UpdatePerUserSystemParameters"
 	os.system(c)
 	

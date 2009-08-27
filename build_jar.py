@@ -2,29 +2,33 @@
 # Licensed under the terms of the MIT License (see LICENSE.txt)
 
 import os
-JYTHON_PATH = '/home/v/jython2.5.0/'
-HOME_PATH = '/home/v/Desktop/yay/'
+
+
 ## TODO
 def runit(cmd):
-	#a = subprocess.Popen(cmd,shell=True)
 	os.system(cmd)
-	print "ran: " + cmd
-
-
+	print "Ran: %s." % cmd
 
 if __name__ == '__main__':
-	runit('rm *.class')
-	runit('rm yay.jar')
-	
-	runit('rm ~/Desktop/yay.jar')
-	
-	runit('rm -rf ~/Desktop/cachedir')
+	if os.name == 'posix':
+		rm_cmd = 'rm'
+		rmd_cmd = 'rm -r'
+		cp_cmd = 'cp'
+	elif os.name == 'nt':
+		rm_cmd = 'del'
+		rmd_cmd = 'rmdir /s /q'
+		cp_cmd = 'copy'
+	else:
+		pass
+
+	runit('%s yay.jar' % rm_cmd)
+	runit('%s cachedir' % rmd_cmd)
 	
 	runit("javac -classpath jythonlib.jar *.java")
-	
-	runit("cp jythonlib.jar yay.jar")
+	runit("%s jythonlib.jar yay.jar" % cp_cmd)
 	runit("jar ufm yay.jar manifest.txt *.class *.py *.gif")
+
+	#runit('%s *.class' % rm_cmd)
 	
-	runit('cp yay.jar ~/Desktop/')
-	runit('java -jar ~/Desktop/yay.jar')
+	runit('java -jar yay.jar')
 	#maybe use API to upload directly to "Downloads" section
