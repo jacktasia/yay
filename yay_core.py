@@ -7,6 +7,9 @@ import javax.swing as swing
 import java.lang as lang
 import java.lang.System as System
 import java.io.File as File
+from java.util.prefs import *
+from java.lang import Object
+import YayPrefs;
 
 import threading
 import dircache
@@ -32,44 +35,31 @@ class YayCore(threading.Thread):
 		self.has_started = False
 		
 		app_name = 'Yay'
-		filename = 'config.pkl'
+
 		print os_name
 		if os_name.find('Windows') != -1:
-		    self.config_dir = os.environ["APPDATA"] + self.os_sep + app_name + self.os_sep
 		    self.os = 'win'
 		else:
-		    self.config_dir = os.path.expanduser("~") + self.os_sep + '.' + app_name + self.os_sep
 		    self.os = 'other'
-		self.config_path = self.config_dir + filename #'server_config.ini'
-		self.dir = ''
-		if not os.path.exists(self.config_dir):
-			self.first_start = True
-			os.makedirs(self.config_dir)
-			self.has_dir = False
-			self.create_config_file()
-		else:
-			try:
-				f = open(self.config_path,'rb')
-			except IOError:
-				print "file doesn't exist"
-				self.first_start = True
-				self.create_config_file()
+
+		
+		self.prefs = Preferences.userNodeForPackage(YayPrefs().getClass())
+		
 	
-		self.dir = self.get_config('browse_folder')
-		self.ticks = self.get_config('speed')
+		self.dir = self.prefs.get('image_folder','')
+		self.ticks = self.prefs.getInt('speed',30)
 		
 		if self.dir == '':
 			## this should be a dialog alert...
+			self.set_dir()
 			print "quitting"
 			#sys.exit()
-			System.exit(0)
+			#System.exit(0)
 		else:
 			print self.dir
 
-
 		self._stopevent = threading.Event()
 		self._sleepperiod = 1.0
-		
 		threading.Thread.__init__(self,name='GoGo')
 		self.file_count = 0;
 		self.countsec = 0
@@ -78,51 +68,19 @@ class YayCore(threading.Thread):
 		self.last_off()
 		self.updateLabel()
 
-	def create_config_file(self):
-		self.set_dir()
-		self.set_speed(self.ticks)
-
-	def get_has_dir(self):
-		return self.has_dir
-
-	## need like a set_config...so we can have like config['pause_time']
 	def set_dir(self):
 		dir = self.getDirectory()
-		self.set_config('browse_folder',dir)
-		self.has_dir = True
+		self.prefs.put('image_folder',dir)
 		old_dir = self.dir
 		self.dir = dir 
 		self.loadup()
 		if dir != old_dir:
-			self.do_change()
+			self.do_change() #change
 
 	def set_speed(self,s):
-		self.set_config('speed',s)
+		self.prefs.putInt('speed',s)
 		self.ticks = s
 		self.updateLabel()
-
-	def set_config(self,n,v):
-		if not self.first_start:
-			config = self.get_config()			
-		else:
-			config = {}
-			self.first_start = False
-		config[n] = v
-		output = open(self.config_path,'wb')
-		pickle.dump(config,output)
-		output.close()
-
-	def get_config(self,n=None):
-		f = open(self.config_path,'rb')
-		config = pickle.load(f)
-		f.close()
-		if n is not None:
-			return config[n]
-		else:
-			return config
-	
-	def get_dir(self):
-		return self.get_config('browse_folder')
 
 	def set_ticks(self,ticks):
 		self.ticks = ticks
