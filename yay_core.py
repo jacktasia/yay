@@ -33,31 +33,19 @@ class YayCore(threading.Thread):
 		self.ticks = 30 #default
 		self.first_start = False
 		self.has_started = False
-		
 		app_name = 'Yay'
-
-		print os_name
+		print os_name # TODO log
 		if os_name.find('Windows') != -1:
 		    self.os = 'win'
 		else:
 		    self.os = 'other'
-
-		
 		self.prefs = Preferences.userNodeForPackage(YayPrefs().getClass())
-		
-	
 		self.dir = self.prefs.get('image_folder','')
 		self.ticks = self.prefs.getInt('speed',30)
-		
-		if self.dir == '':
-			## this should be a dialog alert...
+		if self.dir == '':	
 			self.set_dir()
-			print "quitting"
-			#sys.exit()
-			#System.exit(0)
 		else:
 			print self.dir
-
 		self._stopevent = threading.Event()
 		self._sleepperiod = 1.0
 		threading.Thread.__init__(self,name='GoGo')
