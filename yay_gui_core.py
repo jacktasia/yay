@@ -7,6 +7,7 @@ import javax.swing as swing
 import java.lang as lang
 import java.lang.System as System
 import java.io.File as File
+from java.lang import Object
 
 import threading
 import dircache
@@ -19,9 +20,13 @@ class YayGuiCore:
 
 	def buildGui(self):
 		
-		self.frame = swing.JFrame('Yay Desktop 0.7')
+		self.frame = swing.JFrame('Yay 0.7.1')
 		self.frame.windowClosing = self.handleShowHide
 		self.frame.contentPane.layout = awt.GridLayout(4,2)
+		find_icon = Object().getClass().getResource("/yay64.gif")
+		frame_icon = awt.Toolkit.getDefaultToolkit().getImage(find_icon)
+		#scaled_frame_icon = frame_icon.getScaledInstance(16,16,0)
+		self.frame.setIconImage(frame_icon)
 		panel = swing.JPanel()
 		### 		
 		# Menu Bar

@@ -9,7 +9,7 @@ import java.lang.System as System
 import java.io.File as File
 from java.util.prefs import *
 from java.lang import Object
-import YayPrefs;
+import YayPrefs; #this is a dummy java class, make sure it is compiled
 
 import threading
 import dircache
@@ -99,20 +99,21 @@ class YayCore(threading.Thread):
 
 	def last_off(self):
 		#this finds out the current desktop and if is the current selected folder...
-		cur_path = os.popen("gconftool-2 --get /desktop/gnome/background/picture_filename").read().strip()
-		count = 0;
-		found = -1
-		b = cur_path.split('/')
-		cur_path = b[len(b)-1]
-		for a in self.workingdir:
-			if a == cur_path:
-				found = count
-				break
-			count += 1
-		if found == -1:
-			found = 0
-		self.file_count = found
-		self.do_change()
+		if self.os == 'other':
+			cur_path = os.popen("gconftool-2 --get /desktop/gnome/background/picture_filename").read().strip()
+			count = 0;
+			found = -1
+			b = cur_path.split('/')
+			cur_path = b[len(b)-1]
+			for a in self.workingdir:
+				if a == cur_path:
+					found = count
+					break
+				count += 1
+			if found == -1:
+				found = 0
+			self.file_count = found
+			self.do_change()
 
 	def doStart(self):
 		if not self.has_started:
